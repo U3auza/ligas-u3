@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ligas U3⭐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --bg:        #0b0e14;
+    --surface:   #131720;
+    --surface2:  #1a2030;
+    --border:    rgba(255,255,255,0.07);
+    --orange:    #f97316;
+    --orange-dim:#7c3810;
+    --gold:      #fbbf24;
+    --text:      #e8eaf0;
+    --muted:     #6b7280;
+    --win:       #22c55e;
+    --loss:      #ef4444;
+    --radius:    10px;
+    --font-head: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  /* ─── RESET ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── BACKGROUND TEXTURE ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.015) 60px),
+      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.015) 60px);
+    pointer-events: none;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────── */
+  .app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ─── HEADER ─────────────────────────────────────────── */
+  header {
+    padding: 36px 0 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .logo-ball {
+    width: 48px; height: 48px;
+    background: var(--orange);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 0 30px rgba(249,115,22,0.4);
+  }
+  .logo-ball::before, .logo-ball::after {
+    content: '';
+    position: absolute;
+    border: 2px solid rgba(0,0,0,0.35);
+    border-radius: 50%;
+  }
+  .logo-ball::before { inset: 6px; clip-path: inset(0 50% 0 0); }
+  .logo-ball::after  { inset: 6px; clip-path: inset(0 0 0 50%); }
+  .header-text h1 {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #fff;
+  }
+  .header-text h1 span { color: var(--orange); }
+  .header-text p { color: var(--muted); font-size: 0.85rem; margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ─── LEAGUE TABS ────────────────────────────────────── */
+  .league-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: 0.02em;
+  }
+  .tab-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+  .tab-btn.active {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.35);
+  }
+
+  /* ─── LEAGUE PANEL ───────────────────────────────────── */
+  .league-panel { display: none; }
+  .league-panel.active {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    animation: fadeUp .3s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 760px) {
+    .league-panel.active { grid-template-columns: 1fr; }
+  }
+
+  /* ─── CARD ───────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card-header h2 {
+    font-family: var(--font-head);
+    font-size: 1.25rem;
+    letter-spacing: 0.06em;
+    color: #fff;
+  }
+  .card-header .badge {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--orange);
+    background: rgba(249,115,22,0.1);
+    border: 1px solid rgba(249,115,22,0.25);
+    padding: 3px 9px;
+    border-radius: 100px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── STANDINGS TABLE ────────────────────────────────── */
+  .standings-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+  thead th {
+    padding: 10px 12px;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:nth-child(2) { text-align: left; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  td {
+    padding: 11px 12px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  td:nth-child(2) { text-align: left; }
+
+  .pos-num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    width: 28px;
+    display: inline-block;
+    text-align: center;
+  }
+  .pos-1 .pos-num { color: var(--gold); font-weight: 600; }
+  .pos-2 .pos-num { color: #94a3b8; font-weight: 600; }
+  .pos-3 .pos-num { color: #cd7c38; font-weight: 600; }
+
+  .team-name { font-weight: 500; color: var(--text); }
+  .manager-name { font-size: 0.75rem; color: var(--muted); }
+
+  .pts-cell {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--orange);
+    font-size: 0.92rem;
+  }
+  .num-cell {
+    font-family: var(--font-mono);
+    color: #94a3b8;
+    font-size: 0.8rem;
+  }
+  .diff-pos { color: var(--win); font-family: var(--font-mono); font-size: 0.8rem; }
+  .diff-neg { color: var(--loss); font-family: var(--font-mono); font-size: 0.8rem; }
+  .diff-neu { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
+
+  .form-tag {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .f-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .f-w { background: var(--win); }
+  .f-l { background: var(--loss); }
+  .f-p { background: var(--muted); }
+
+  /* ─── SIDEBAR ────────────────────────────────────────── */
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ─── RESULTS ────────────────────────────────────────── */
+  .result-item {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-round {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+  .result-match {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .result-team {
+    font-size: 0.83rem;
+    font-weight: 500;
+    flex: 1;
+    color: var(--text);
+  }
+  .result-team.right { text-align: right; }
+  .result-score {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .score-num {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    min-width: 28px;
+    text-align: center;
+  }
+  .score-sep { color: var(--muted); font-size: 0.75rem; }
+  .score-w { color: var(--win); }
+  .score-l { color: var(--loss); }
+  .score-n { color: var(--text); }
+
+  /* ─── SCHEDULE ───────────────────────────────────────── */
+  .schedule-item {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+  }
+  .schedule-item:last-child { border-bottom: none; }
+  .sch-team { font-weight: 500; }
+  .sch-team.right { text-align: right; }
+  .sch-vs {
+    font-family: var(--font-head);
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  .sch-date {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ─── EMPTY STATE ────────────────────────────────────── */
+  .empty-state {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────── */
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  footer a { color: var(--orange); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ─── EDIT NOTICE ────────────────────────────────────── */
+  .edit-notice {
+    background: rgba(249,115,22,0.07);
+    border: 1px solid rgba(249,115,22,0.2);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .edit-notice span { color: var(--orange); font-weight: 600; }
+
+  /* ─── SCROLLBAR ──────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="logo-ball"></div>
+    <div class="header-text">
+      <h1>LIGAS <span>U3⭐</span></h1>
+      <p>iBasket Manager 3 · Ligas Privadas</p>
+    </div>
+  </header>
+
+  <div class="edit-notice">
+    🛠 <span>Admin:</span> Para actualizar datos, edita el objeto <code>LEAGUES_DATA</code> al inicio del script en este mismo fichero HTML.
+  </div>
+
+  <div class="league-tabs" id="tabs"></div>
+  <div id="panels"></div>
+
+  <footer>
+    Actualizado manualmente · <a href="https://eu.ibasketmanager.com" target="_blank">iBasketManager 3</a>
+  </footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ██████╗  █████╗ ████████╗ ██████╗ ███████╗
+   ██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔════╝
+   ██║  ██║███████║   ██║   ██║   ██║███████╗
+   ██║  ██║██╔══██║   ██║   ██║   ██║╚════██║
+   ██████╔╝██║  ██║   ██║   ╚██████╔╝███████║
+   ╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚══════╝
+
+   EDITA AQUÍ LOS DATOS DE TUS LIGAS
+   ═══════════════════════════════════════════════════════════════
+
+   Estructura de cada liga:
+   ─────────────────────────
+   id       → identificador único (sin espacios)
+   name     → nombre visible de la liga
+   season   → texto de temporada libre
+   standings → clasificación (array ordenado por posición)
+     · team     → nombre del equipo
+     · manager  → nombre del manager/usuario
+     · pj       → partidos jugados
+     · pg       → partidos ganados
+     · pp       → partidos perdidos
+     · pf       → puntos a favor (total)
+     · pc       → puntos en contra (total)
+     · pts      → puntos en la clasificación
+     · form     → últimos 5 resultados: "W"=victoria, "L"=derrota, ""=sin jugar
+                  Ejemplo: ["W","W","L","W","L"]
+
+   results  → resultados jugados (array, el más reciente primero)
+     · round    → texto de jornada (ej: "Jornada 5")
+     · date     → fecha (ej: "14 abr 2025")
+     · home     → equipo local
+     · away     → equipo visitante
+     · home_pts → puntos local
+     · away_pts → puntos visitante
+
+   schedule → próximos partidos (array, el más próximo primero)
+     · round    → texto de jornada
+     · date     → fecha prevista
+     · home     → equipo local
+     · away     → equipo visitante
+
+   ═══════════════════════════════════════════════════════════════ */
+
+const LEAGUES_DATA = [
+  {
+    id: "liga-alfa",
+    name: "U3 1A GRUPO A",
+    season: "Temporada 2024/25",
+    standings: [
+      { team: "U3⭐ Lucky²⁴",             manager: "",  pj: 2, pg: 2, pp: 0, pf: 114,  pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "U3*CSKA Manresa🍀",        manager: "",  pj: 2, pg: 2, pp: 0, pf: 75,   pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "U3⭐Arteixo Team",          manager: "",  pj: 2, pg: 2, pp: 0, pf: 21,   pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "U3⭐Jugoplastika Split",    manager: "",  pj: 2, pg: 1, pp: 1, pf: 15,   pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "U3⭐ Elektro Bosna✨",      manager: "",  pj: 2, pg: 1, pp: 1, pf: -27,  pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "U3⭐Локомотів",            manager: "",  pj: 2, pg: 0, pp: 2, pf: -56,  pc: 0, pts: 0, form: ["L","L","-","-","-"] },
+      { team: "U3⭐ Judici Babilònia",     manager: "",  pj: 2, pg: 0, pp: 2, pf: -62,  pc: 0, pts: 0, form: ["L","L","-","-","-"] },
+      { team: "🏀Dunk Lab🏀",             manager: "",  pj: 2, pg: 0, pp: 2, pf: -80,  pc: 0, pts: 0, form: ["L","L","-","-","-"] }
+    ],
+    results: [
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐Jugoplastika Split", away: "U3*CSKA Manresa🍀",   home_pts: 82,  away_pts: 91  },
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐ Judici Babilònia",  away: "U3⭐Arteixo Team",    home_pts: 66,  away_pts: 70  },
+      { round: "Jornada 2", date: "12 abr 2025", home: "🏀Dunk Lab🏀",          away: "U3⭐ Lucky²⁴",        home_pts: 60,  away_pts: 116 },
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐ Elektro Bosna✨",   away: "U3⭐Локомотів",       home_pts: 117, away_pts: 78  }
+    ],
+    schedule: []
+  },
+  {
+    id: "liga-beta",
+    name: "U3 1A GRUPO B",
+    season: "Temporada 2024/25",
+    standings: [
+      { team: "🍀U3⭐TDK MANRESA",       manager: "Nikkinking24", pj: 2, pg: 2, pp: 0, pf: 0, pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "U3⭐Villar Knights🍀",     manager: "reinhardt75",  pj: 2, pg: 2, pp: 0, pf: 0, pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "🍀Piles Muils U3⭐",       manager: "Gregory14",    pj: 2, pg: 1, pp: 1, pf: 0, pc: 0, pts: 2, form: ["L","W","-","-","-"] },
+      { team: "U3⭐MANRESA",              manager: "Kingjames",    pj: 1, pg: 1, pp: 0, pf: 0, pc: 0, pts: 2, form: ["-","W","-","-","-"] },
+      { team: "U3⭐auza",                 manager: "auza",         pj: 2, pg: 1, pp: 1, pf: 0, pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "U3⭐Skyliners²⁴",          manager: "manumix",      pj: 2, pg: 1, pp: 1, pf: 0, pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "Black Cat",                manager: "BlackCat1",    pj: 0, pg: 0, pp: 0, pf: 0, pc: 0, pts: 0, form: ["-","-","-","-","-"] },
+      { team: "Fife Teide Happy🇮🇨",      manager: "juanmartin",   pj: 2, pg: 0, pp: 2, pf: 0, pc: 0, pts: 0, form: ["L","L","-","-","-"] }
+    ],
+    results: [
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐auza",              away: "U3⭐Villar Knights🍀",  home_pts: 50,  away_pts: 105 },
+      { round: "Jornada 2", date: "12 abr 2025", home: "🍀U3⭐TDK MANRESA",    away: "U3⭐Skyliners²⁴",       home_pts: 126, away_pts: 66  },
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐MANRESA",           away: "Black Cat",             home_pts: 20,  away_pts: 0   },
+      { round: "Jornada 2", date: "12 abr 2025", home: "Fife Teide Happy🇮🇨",   away: "🍀Piles Muils U3⭐",   home_pts: 63,  away_pts: 102 }
+    ],
+    schedule: []
+  },
+  {
+    id: "liga-gamma",
+    name: "U3 1A GRUPO C",
+    season: "Temporada 2024/25",
+    standings: [
+      { team: "U3⭐Caja Bilbao²⁴",       manager: "",  pj: 2, pg: 2, pp: 0, pf: 74,  pc: 0, pts: 4, form: ["W","W","-","-","-"] },
+      { team: "U3⭐CB murgi²⁴",          manager: "",  pj: 2, pg: 1, pp: 1, pf: 42,  pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "U3⭐ Dragons Team",        manager: "",  pj: 2, pg: 1, pp: 1, pf: 19,  pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "Davie Sharks U3⭐",        manager: "",  pj: 2, pg: 1, pp: 1, pf: 12,  pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "FC_Paddel",               manager: "",  pj: 2, pg: 1, pp: 1, pf: 3,   pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "U3⭐ Starke Kälte",       manager: "",  pj: 2, pg: 1, pp: 1, pf: -14, pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "Buenavista CB🇮🇨",        manager: "",  pj: 2, pg: 1, pp: 1, pf: -49, pc: 0, pts: 2, form: ["W","L","-","-","-"] },
+      { team: "Froggies Basket",         manager: "",  pj: 2, pg: 0, pp: 2, pf: -87, pc: 0, pts: 0, form: ["L","L","-","-","-"] }
+    ],
+    results: [
+      { round: "Jornada 2", date: "12 abr 2025", home: "Davie Sharks U3⭐",     away: "U3⭐ Starke Kälte",   home_pts: 96,  away_pts: 77  },
+      { round: "Jornada 2", date: "12 abr 2025", home: "U3⭐Caja Bilbao²⁴",    away: "Froggies Basket",     home_pts: 103, away_pts: 43  },
+      { round: "Jornada 2", date: "12 abr 2025", home: "Buenavista CB🇮🇨",      away: "U3⭐CB murgi²⁴",      home_pts: 69,  away_pts: 125 },
+      { round: "Jornada 2", date: "12 abr 2025", home: "FC_Paddel",             away: "U3⭐ Dragons Team",   home_pts: 87,  away_pts: 79  }
+    ],
+    schedule: []
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDERIZADO — No tocar salvo que sepas lo que haces
+   ═══════════════════════════════════════════════════════════════ */
+
+function formDots(form) {
+  if (!form || form.length === 0) return '—';
+  return '<span class="form-tag">' +
+    form.map(r => {
+      if (r === 'W') return '<span class="f-dot f-w" title="Victoria"></span>';
+      if (r === 'L') return '<span class="f-dot f-l" title="Derrota"></span>';
+      return '<span class="f-dot f-p" title="—"></span>';
+    }).join('') +
+  '</span>';
+}
+
+function diffClass(val) {
+  if (val > 0) return 'diff-pos';
+  if (val < 0) return 'diff-neg';
+  return 'diff-neu';
+}
+
+function diffStr(val) {
+  if (val > 0) return '+' + val;
+  return String(val);
+}
+
+function renderStandings(standings) {
+  if (!standings || standings.length === 0)
+    return '<div class="empty-state">Sin datos de clasificación</div>';
+
+  // Detect if league uses DP mode (pf/pc both 0 or pc always 0)
+  const usesDP = standings.every(t => t.pc === 0);
+
+  const rows = standings.map((t, i) => {
+    const pos  = i + 1;
+    const cls  = pos <= 3 ? ` pos-${pos}` : '';
+    let diffCol;
+    if (usesDP) {
+      const dp = t.pf;
+      diffCol = `<td class="${diffClass(dp)}">${diffStr(dp)}</td>`;
+    } else {
+      const diff = t.pf - t.pc;
+      diffCol = `
+        <td class="num-cell">${t.pf}</td>
+        <td class="num-cell">${t.pc}</td>
+        <td class="${diffClass(diff)}">${diffStr(diff)}</td>`;
+    }
+    return `<tr class="${cls}">
+      <td><span class="pos-num">${pos}</span></td>
+      <td>
+        <div class="team-name">${t.team}</div>
+        <div class="manager-name">@${t.manager}</div>
+      </td>
+      <td class="num-cell">${t.pj}</td>
+      <td class="num-cell">${t.pg}</td>
+      <td class="num-cell">${t.pp}</td>
+      ${diffCol}
+      <td class="pts-cell">${t.pts}</td>
+      <td>${formDots(t.form)}</td>
+    </tr>`;
+  }).join('');
+
+  const extraCols = standings.every(t => t.pc === 0)
+    ? `<th title="Diferencial de puntos">DP</th>`
+    : `<th title="Puntos a favor">PF</th><th title="Puntos en contra">PC</th><th title="Diferencia">DIF</th>`;
+
+  return `<div class="standings-wrap"><table>
+    <thead><tr>
+      <th>#</th>
+      <th style="text-align:left">Equipo</th>
+      <th title="Partidos jugados">PJ</th>
+      <th title="Partidos ganados">PG</th>
+      <th title="Partidos perdidos">PP</th>
+      ${extraCols}
+      <th title="Puntos clasificación">PTS</th>
+      <th title="Últimos 5">FORMA</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function renderResults(results) {
+  if (!results || results.length === 0)
+    return '<div class="empty-state">Sin resultados todavía</div>';
+
+  return results.map(r => {
+    const homeWin = r.home_pts > r.away_pts;
+    const awayWin = r.away_pts > r.home_pts;
+    return `<div class="result-item">
+      <div class="result-round">${r.round} · ${r.date}</div>
+      <div class="result-match">
+        <div class="result-team">${r.home}</div>
+        <div class="result-score">
+          <span class="score-num ${homeWin ? 'score-w' : 'score-l'}">${r.home_pts}</span>
+          <span class="score-sep">–</span>
+          <span class="score-num ${awayWin ? 'score-w' : 'score-l'}">${r.away_pts}</span>
+        </div>
+        <div class="result-team right">${r.away}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSchedule(schedule) {
+  if (!schedule || schedule.length === 0)
+    return '<div class="empty-state">Sin partidos programados</div>';
+
+  return schedule.map(s => `
+    <div class="schedule-item">
+      <div>
+        <div class="sch-team">${s.home}</div>
+        <div class="sch-date">${s.round}</div>
+      </div>
+      <div>
+        <div class="sch-vs">VS</div>
+        <div class="sch-date" style="text-align:center">${s.date}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="sch-team right">${s.away}</div>
+        <div class="sch-date" style="text-align:right">&nbsp;</div>
+      </div>
+    </div>`).join('');
+}
+
+function buildApp() {
+  const tabsEl   = document.getElementById('tabs');
+  const panelsEl = document.getElementById('panels');
+
+  LEAGUES_DATA.forEach((league, idx) => {
+    // Tab button
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (idx === 0 ? ' active' : '');
+    btn.textContent = league.name;
+    btn.dataset.target = league.id;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.league-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(league.id).classList.add('active');
+    });
+    tabsEl.appendChild(btn);
+
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = 'league-panel' + (idx === 0 ? ' active' : '');
+    panel.id = league.id;
+    panel.innerHTML = `
+      <!-- STANDINGS -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Clasificación</h2>
+          <span class="badge">${league.season}</span>
+        </div>
+        ${renderStandings(league.standings)}
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="card">
+          <div class="card-header">
+            <h2>Resultados</h2>
+          </div>
+          ${renderResults(league.results)}
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Próximos</h2>
+          </div>
+          ${renderSchedule(league.schedule)}
+        </div>
+      </div>`;
+
+    panelsEl.appendChild(panel);
+  });
+}
+
+buildApp();
+</script>
+</body>
+</html>
